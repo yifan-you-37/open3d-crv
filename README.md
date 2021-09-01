@@ -60,7 +60,7 @@ We then need to make sure that the folder containing `libLLVM-6.0.so.1` is added
 export LD_LIBRARY_PATH=/path/to/llvm/lib:$LD_LIBRARY_PATH
 ldconfig
 ```
-Note: you might want to add `export LD_LIBRARY_PATH=/path/to/llvm/lib:$LD_LIBRARY_PATH` to your `~/.bashrc` so you don't have to manually type it in every time you start a new terminal and try to run Open3D.
+Note: After you build Open3D successfully, everytime you run it (`import open3d`), it needs to find `libLLVM-6.0.so.1`. You might want to add `export LD_LIBRARY_PATH=/path/to/llvm/lib:$LD_LIBRARY_PATH` to your `~/.bashrc` so you don't have to manually type it in every time you start a new terminal and try to run Open3D.
 
 ### Step 4: Installing OSMesa (without sudo)
 Open3D w/ headless rendering requires us to build OSMesa. I tried building OSMesa from source but encountered more errors and packages not found. So instead I chose to use the `.deb` package someone provided in [their instructions](https://pyrender.readthedocs.io/en/latest/install/index.html#installmesa) of building OSMesa. 
@@ -86,7 +86,37 @@ The output of ldd should indicate that all dependencies are found.
 CPLUS_INCLUDE_PATH=/path/to/mesa/usr/local/lib:$CPLUS_INCLUDE_PATH
 C_INCLUDE_PATH=/path/to/mesa/usr/local/lib:$C_INCLUDE_PATH
 ```
+
+5. Add the mesa libraries to `LD_LIBRARY_PATH`, so they can be found when building Open3d: 
+```
+export LD_LIBRARY_PATH=/path/to/mesa/usr/local/lib:$LD_LIBRARY_PATH
+ldconfig
+```
+
 ### Step 5: Finally! Installing Open3d (without sudo)
+1. `git clone` the Open3d to some folder. Moving forward we use `/path/to/Open3D` to refer to this folder:
+```
+git clone /path/to/Open3D
+cd /path/to/Open3D
+mkdir build && cd build
+```
+2. Generate build files:
+```
+cmake -DENABLE_HEADLESS_RENDERING=ON \ 
+                 -DCMAKE_PREFIX_PATH=/path/to/mesa/usr/local/lib \
+                 -DBUILD_GUI=OFF \
+                 -DUSE_SYSTEM_GLEW=OFF \
+                 -DUSE_SYSTEM_GLFW=OFF \
+                 ..
+```
+3. Create a python virtual environment and enter into it, or enter into a pre-existing venv. open3d will be installed in this venv.
+3. Build Open3D
+```
+make -j8
+make install-pip-package
+```
+4. Test it by `import open3d` in python terminal and try to render something headlessly!
+
 
 
 
