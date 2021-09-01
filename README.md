@@ -1,5 +1,5 @@
 # open3d-crv
-Below specifies instructions for building open3d [w/ headless rendering flags](http://www.open3d.org/docs/latest/tutorial/Advanced/headless_rendering.html) on crv.
+Below specifies instructions for building open3d [w/ headless rendering flags](http://www.open3d.org/docs/latest/tutorial/Advanced/headless_rendering.html) on crv, **without sudo**.
 
 This requires OSMesa. With sudo it's very easy to install. Without sudo it's still doable but requires manually building LLVM and several other packages. The benefit is that once you do this you can render headlessly w/o having to open an extra viewer like turboVNC.
 
@@ -40,4 +40,12 @@ cmake /path/to/llvm-src \
       -Wno-dev -G Ninja .. && 
       ninja      
 ````
+
+6. Move the built files into `/path/to/llvm` by running `ninja install`.
+7. To confirm that build is successful, we check that `libLLVM-6.0.so` is generated and has all its dependencies:
+````
+cd /path/to/llvm/lib
+ldd libLLVM-6.0.so
+````
+The output of `ldd` should indicate that all dependencies of `libLLVM-6.0.so` are found.
 
